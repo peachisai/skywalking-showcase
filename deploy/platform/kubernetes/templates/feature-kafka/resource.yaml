@@ -16,7 +16,7 @@
 # under the License.
 #
 
-{{- if .Values.features.rocketmqMonitor.enabled }}
+{{- if .Values.features.kafkaMonitor.enabled }}
 
 apiVersion: v1
 kind: Service
@@ -25,34 +25,24 @@ metadata:
 spec:
   ports:
     - protocol: TCP
-      port: 9876
-      targetPort: 9876
-  selector:
-    app: rocketmq
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: rocketmq-exporter
-spec:
-  ports:
+      port: 7071
+      targetPort: 7071
     - protocol: TCP
-      port: 5557
-      targetPort: 5557
+      port: 9092
+      targetPort: 9092
   selector:
-    app: rocketmq
+    app: kafka
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rocketmq
+  name: kafka
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: rocketmq
+      app: kafka
   template:
     metadata:
       labels:
@@ -61,7 +51,7 @@ spec:
         sidecar.istio.io/inject: "false"
     spec:
       containers:
-        - name: zookeeper
+        - name: kafka-zookeeper
           image: zookeeper:3.4
           imagePullPolicy: IfNotPresent
           ports:
@@ -70,45 +60,32 @@ spec:
             - name: ALLOW_ANONYMOUS_LOGIN
               value: "yes"
         - name: kafka-broker
-          image: apache/rocketmq:4.9.4
+          image: bitnami/kafka:2.4.1
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 10911
-            - containerPort: 10909
+            - containerPort: 9092
+            - containerPort: 7071
           env:
             - name: KAFKA_CFG_ZOOKEEPER_CONNECT
-              value: "Asia/Shanghai"
-            - name: NAMESRV_ADDR
-              value: "localhost:9876"
-            - name: JAVA_OPT_EXT
-              value: "-Xmx128m -Xms128m"
-          command: [ "sh", "mqbroker" ]
-        - name: rocketmq-consumer-perf-test
-          image: apache/rocketmq:4.9.4
+              value: "kafka-zookeeper:2181"
+            - name: ALLOW_PLAINTEXT_LISTENER
+              value: "yes"
+            - name: KAFKA_OPTS
+              value: "-javaagent:/etc/jmx_prometheus_javaagent-0.18.0.jar=7071:/etc/kafka-2_0_0.yml"
+        - name: kafka-consumer
+          image: bitnami/kafka:2.4.1
           imagePullPolicy: IfNotPresent
-          env:
-            - name: TZ
-              value: "Asia/Shanghai"
-            - name: NAMESRV_ADDR
-              value: "localhost:9876"
-          command: ["sh", "tools.sh", "org.apache.rocketmq.example.quickstart.Consumer"]
-        - name: rocketmq-exporter
-          image: apache/rocketmq-exporter:0.0.2
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 5557
-              name: metrics
-          env:
-            - name: TZ
-              value: "Asia/Shanghai"
-            - name: rocketmq.config.namesrvAddr
-              value: "localhost:9876"
+          command:
+            - bash
+            - -c
+            - >
+              kafka-producer-perf-test.sh --topic perftest --num-records 100000 --record-size 100 --throughput 500 --producer-props bootstrap.servers=kafka-broker1:9092
 
 ---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: rocketmq-producer-development
+  name: kafka-producer
 spec:
   schedule: "*/10 * * * *"
   successfulJobsHistoryLimit: 1
@@ -119,16 +96,13 @@ spec:
         spec:
           restartPolicy: Never
           containers:
-            - name: rocketmq-producer-perf-test
-              image: apache/rocketmq:4.9.4
+            - name: kafka-producer
+              image: bitnami/kafka:2.4.1
               imagePullPolicy: IfNotPresent
-              env:
-                - name: TZ
-                  value: "Asia/Shanghai"
-                - name: NAMESRV_ADDR
-                  value: "rocketmq-service:9876"
-                - name: JAVA_OPT_EXT
-                  value: "-Xmx128m -Xms128m"
-              command: [ "sh", "tools.sh", "org.apache.rocketmq.example.quickstart.Producer" ]
+              command:
+                - bash
+                - -c
+                - >
+                  kafka-consumer-perf-test.sh --broker-list kafka:9092 --topic perftest --messages 100000
 
 {{- end }}
