@@ -23,14 +23,14 @@ services:
     ports:
       - "12800:12800"
     networks:
-      - e2e
+      - sw
 
   zookeeper:
     image: zookeeper:3.4
     expose:
       - 2181
     networks:
-      - e2e
+      - sw
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
     healthcheck:
@@ -46,7 +46,7 @@ services:
       - 9092
       - 7071
     networks:
-      - e2e
+      - sw
     environment:
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
@@ -67,7 +67,7 @@ services:
       - 9093
       - 7072
     networks:
-      - e2e
+      - sw
     environment:
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
@@ -84,7 +84,7 @@ services:
   kafka-producer-perf-test:
     image: bitnami/kafka:2.4.1
     networks:
-      - e2e
+      - sw
     depends_on:
       - broker1
       - broker2
@@ -97,7 +97,7 @@ services:
   kafka-consumer-perf-test:
     image: bitnami/kafka:2.4.1
     networks:
-      - e2e
+      - sw
     depends_on:
       - kafka-producer-perf-test
     command:
@@ -107,12 +107,12 @@ services:
         kafka-consumer-perf-test.sh --broker-list broker1:9092,broker2:9093 --topic perftest --messages 100000
 
   otel-collector:
-    image: otel/opentelemetry-collector:${OTEL_COLLECTOR_VERSION}
+    image: ${OTEL_COLLECTOR_IMAGE}:${OTEL_COLLECTOR_IMAGE_TAG}
     networks:
-      - e2e
+      - sw
     command: [ "--config=/etc/otel-collector-config.yaml" ]
     volumes:
-      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+      - ./config/kafka/otel-collector-kafka-config.yaml:/etc/otel-collector-config.yaml
     expose:
       - 55678
     depends_on:
@@ -120,4 +120,4 @@ services:
       - broker2
 
 networks:
-  e2e:
+  sw:
