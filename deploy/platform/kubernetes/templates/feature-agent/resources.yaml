@@ -154,7 +154,7 @@ spec:
             - name: ACTIVE_MQ_QUEUE
               value: queue-songs-ping
             - name: KAFKA_SERVER_URL
-              value: 43.139.166.178:9092
+              value: kafka.{{ .Release.Namespace }}.svc.cluster.local:9092
             {{- if  .Values.features.postgresqlMonitor.enabled }}
             - name: DATA_SOURCE_URL
               value: jdbc:postgresql://psql.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres
