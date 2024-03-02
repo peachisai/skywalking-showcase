@@ -33,7 +33,7 @@ spring:
     hibernate:
       ddl-auto: create
   kafka:
-    bootstrap-servers: 43.139.166.178:9092
+    bootstrap-servers: ${KAFKA_SERVER_URL:}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -42,4 +42,5 @@ spring:
       enable-auto-commit: true
       key-deserializer: org.apache.kafka.common.serialization.StringSerializer
       value-deserializer: org.apache.kafka.common.serialization.StringSerializer
+      group-id: TEST_GROUP
 

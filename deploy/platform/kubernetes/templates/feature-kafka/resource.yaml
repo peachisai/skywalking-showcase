@@ -101,7 +101,7 @@ spec:
             - bash
             - -c
             - >
-              kafka-producer-perf-test.sh --topic perftest --num-records 100000 --record-size 100 --throughput 500 --producer-props bootstrap.servers=kafka:9092
+              kafka-consumer-perf-test.sh --broker-list kafka:9092 --topic perftest --messages 100000
 
 ---
 apiVersion: batch/v1
@@ -109,7 +109,7 @@ kind: CronJob
 metadata:
   name: kafka-producer
 spec:
-  schedule: "*/30 * * * *"
+  schedule: "*/10 * * * *"
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   jobTemplate:

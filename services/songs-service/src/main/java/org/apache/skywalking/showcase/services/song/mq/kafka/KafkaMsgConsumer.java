@@ -10,8 +10,10 @@ public class KafkaMsgConsumer {
 
     private static final String TOPIC = "TEST_TOPIC";
 
-    @KafkaListener(topics = TOPIC)
-    public void onMessage(String msg) {
-        log.info("kafka receive msg :{}", msg);
+    private static final String GROUP = "TEST_GROUP";
+
+    @KafkaListener(topics = TOPIC, groupId = GROUP)
+    public void listen(String message) {
+        System.out.println("Received message: " + message);
     }
 }
