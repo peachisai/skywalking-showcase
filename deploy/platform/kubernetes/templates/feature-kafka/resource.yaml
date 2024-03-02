@@ -94,37 +94,5 @@ spec:
               value: "yes"
 #            - name: KAFKA_OPTS
 #              value: "-javaagent:/etc/jmx_prometheus_javaagent-0.18.0.jar=7071:/etc/kafka-2_0_0.yml"
-        - name: kafka-consumer
-          image: bitnami/kafka:2.4.1
-          imagePullPolicy: IfNotPresent
-          command:
-            - bash
-            - -c
-            - >
-              kafka-consumer-perf-test.sh --broker-list kafka:9092 --topic perftest --messages 100000
-
----
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: kafka-producer
-spec:
-  schedule: "*/10 * * * *"
-  successfulJobsHistoryLimit: 1
-  failedJobsHistoryLimit: 1
-  jobTemplate:
-    spec:
-      template:
-        spec:
-          restartPolicy: Never
-          containers:
-            - name: kafka-producer
-              image: bitnami/kafka:2.4.1
-              imagePullPolicy: IfNotPresent
-              command:
-                - bash
-                - -c
-                - >
-                  kafka-producer-perf-test.sh --topic perftest --num-records 100000 --record-size 100 --throughput 500 --producer-props bootstrap.servers=kafka:9092
 
 {{- end }}
