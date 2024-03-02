@@ -80,8 +80,8 @@ spec:
               value: "kafka-zookeeper:2181"
             - name: ALLOW_PLAINTEXT_LISTENER
               value: "yes"
-            - name: KAFKA_OPTS
-              value: "-javaagent:/etc/jmx_prometheus_javaagent-0.18.0.jar=7071:/etc/kafka-2_0_0.yml"
+#            - name: KAFKA_OPTS
+#              value: "-javaagent:/etc/jmx_prometheus_javaagent-0.18.0.jar=7071:/etc/kafka-2_0_0.yml"
         - name: kafka-consumer
           image: bitnami/kafka:2.4.1
           imagePullPolicy: IfNotPresent
