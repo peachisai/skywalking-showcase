@@ -32,15 +32,4 @@ spring:
     defer-datasource-initialization: true
     hibernate:
       ddl-auto: create
-  kafka:
-    bootstrap-servers: ${KAFKA_SERVER_URL:}
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-    consumer:
-      auto-offset-reset: earliest
-      enable-auto-commit: true
-      key-deserializer: org.apache.kafka.common.serialization.StringSerializer
-      value-deserializer: org.apache.kafka.common.serialization.StringSerializer
-      group-id: TEST_GROUP
 
