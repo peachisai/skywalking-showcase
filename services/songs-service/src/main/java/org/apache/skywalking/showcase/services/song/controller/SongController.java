@@ -64,7 +64,7 @@ public class SongController {
 
     @GetMapping("/top")
     public List<Song> top() {
-        log.info("listing top songs---------------------");
+        log.info("---------listing top songs---------------------");
         if (!StringUtils.isEmpty(bootstrapServers)) {
             kafkaTemplate.send("topic", "123");
         }
