@@ -26,6 +26,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.skywalking.showcase.services.song.entity.Song;
 import org.apache.skywalking.showcase.services.song.mq.SongMessageSender;
 import org.apache.skywalking.showcase.services.song.repo.SongsRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,6 +47,12 @@ public class SongController {
                                                                      Runtime.getRuntime().availableProcessors())
                                                                  .build();
 
+    @Value("${spring.kafka.bootstrap-servers}")
+    private String bootstrapServers;
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
     @GetMapping
     public List<Song> songs() {
         log.info("Listing all songs");
@@ -55,6 +65,10 @@ public class SongController {
     @GetMapping("/top")
     public List<Song> top() {
         log.info("Listing top songs");
+        if (!StringUtils.isEmpty(bootstrapServers)) {
+            log.info(bootstrapServers);
+            kafkaTemplate.send("topic", "123");
+        }
         return songsRepo.findByLikedGreaterThan(1000);
     }
 
