@@ -355,3 +355,6 @@ features:
 
   rocketmqMonitor:
     enabled: false
+
+  kafkaMonitor:
+    enabled: false
