@@ -65,9 +65,6 @@ public class SongController {
     @GetMapping("/top")
     public List<Song> top() {
         log.info("---------listing top songs---------------------");
-        if (!StringUtils.isEmpty(bootstrapServers)) {
-            kafkaTemplate.send("topic", "123");
-        }
         return songsRepo.findByLikedGreaterThan(1000);
     }
 
