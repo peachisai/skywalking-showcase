@@ -13,12 +13,12 @@ import javax.annotation.PostConstruct;
 @Component
 public class KafkaMsgProducer {
 
-    @Value("${spring.kafka.bootstrap-servers}")
-    private String bootstrapServers;
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @PostConstruct
     public void init() {
-        System.out.println(bootstrapServers);
-        log.info(bootstrapServers);
+        log.info("start kafka producer");
+        kafkaTemplate.send("topic", "skywalking-showcase-kafka");
     }
 }
