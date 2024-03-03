@@ -32,6 +32,16 @@ spec:
       port: 7071
       targetPort: 7071
       name: kafka-exporter
+  selector:
+    app: kafka
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+spec:
+  ports:
     - protocol: TCP
       port: 2181
       targetPort: 2181
