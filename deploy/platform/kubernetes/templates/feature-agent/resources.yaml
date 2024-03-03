@@ -140,7 +140,7 @@ spec:
           {{- else }}
           image: "{{ .Values.sampleServices.hub }}/songs-service:{{ .Values.sampleServices.tag }}"
           {{- end }}
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
           # @feature: agent; set env to configure java agent, If we use injector, we don't need to set env, only need to configure java agent through annotation
