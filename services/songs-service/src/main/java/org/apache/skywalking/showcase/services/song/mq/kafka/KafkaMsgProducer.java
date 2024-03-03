@@ -12,13 +12,8 @@ import javax.annotation.PostConstruct;
 @Slf4j
 @Component
 public class KafkaMsgProducer {
-
-    @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
-
     @PostConstruct
     public void init() {
         log.info("start kafka producer");
-        kafkaTemplate.send("topic", "skywalking-showcase-kafka");
     }
 }
