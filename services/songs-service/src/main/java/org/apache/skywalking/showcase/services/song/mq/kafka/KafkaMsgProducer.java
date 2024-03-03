@@ -1,6 +1,8 @@
 package org.apache.skywalking.showcase.services.song.mq.kafka;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -12,11 +14,15 @@ public class KafkaMsgProducer {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
     @PostConstruct
     public void init() {
         if (StringUtils.isEmpty(bootstrapServers)) {
             return;
         }
         System.out.println(bootstrapServers);
+        kafkaTemplate.send("topic", "123");
     }
 }

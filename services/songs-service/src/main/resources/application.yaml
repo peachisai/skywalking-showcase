@@ -33,7 +33,7 @@ spring:
     hibernate:
       ddl-auto: create
   kafka:
-    bootstrap-servers: ${KAFKA_SERVER_URL:321}
+    bootstrap-servers: ${KAFKA_SERVER_URL:43.139.166.178:9092}
     consumer:
       group-id: test-group
       auto-offset-reset: earliest
